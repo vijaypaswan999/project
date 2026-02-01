@@ -89,9 +89,7 @@ function showDashboard(role) {
     registerDiv.style.display = 'none';
     if (role === 'employee') {
         employeeDashboard.style.display = 'block';
-        // Set default date to today
-        document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        loadEmployeeExpenses(); // Load expenses
+        loadEmployeeExpenses();
     } else {
         adminDashboard.style.display = 'block';
         loadAdminExpenses();
@@ -115,38 +113,33 @@ expenseForm.addEventListener('submit', (e) => {
     const empName = document.getElementById('emp-name').value;
     const amount = document.getElementById('amount').value;
     const description = document.getElementById('description').value;
-    const date = document.getElementById('date').value;
     const fileInput = document.getElementById('file');
     let fileData = null;
     if (fileInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
             fileData = e.target.result;
-            saveExpense(empName, amount, description, date, fileData);
+            saveExpense(empName, amount, description, fileData);
         };
         reader.readAsDataURL(fileInput.files[0]);
     } else {
-        saveExpense(empName, amount, description, date, fileData);
+        saveExpense(empName, amount, description, fileData);
     }
 });
 
-function saveExpense(empName, amount, description, date, fileData) {
+function saveExpense(empName, amount, description, fileData) {
     const expense = {
         id: Date.now(),
         empName,
         amount,
         description,
-        date,
         file: fileData,
         status: 'pending'
     };
     expenses.push(expense);
     localStorage.setItem('expenses', JSON.stringify(expenses));
+    loadEmployeeExpenses();
     expenseForm.reset();
-    // Reset date to today
-    document.getElementById('date').value = new Date().toISOString().split('T')[0];
-    alert('Expense added successfully!');
-    loadEmployeeExpenses(); // Refresh the list
 }
 
 // Load employee expenses
@@ -155,42 +148,24 @@ function loadEmployeeExpenses() {
     const userExpenses = expenses.filter(e => e.empName === user.username);
     expenseList.innerHTML = '';
     userExpenses.forEach(exp => {
-        const statusColor = exp.status === 'approved' ? 'green' : exp.status === 'rejected' ? 'red' : 'orange';
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - Status: <span style="color: ${statusColor}; font-weight: bold;">${exp.status}</span>
+            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Status: ${exp.status}
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
-            <button onclick="editExpense(${exp.id})">Edit</button>
         `;
         expenseList.appendChild(li);
     });
 }
 
-// Edit expense
-function editExpense(id) {
-    const exp = expenses.find(e => e.id === id);
-    if (exp) {
-        // Populate form with existing data
-        document.getElementById('emp-name').value = exp.empName;
-        document.getElementById('amount').value = exp.amount;
-        document.getElementById('description').value = exp.description;
-        document.getElementById('date').value = exp.date;
-        // Note: File can't be pre-populated for security reasons
-        alert('Form populated for editing. Make changes and submit. Status will reset to pending.');
-        // Remove old expense and let user resubmit
-        expenses = expenses.filter(e => e.id !== id);
-        localStorage.setItem('expenses', JSON.stringify(expenses));
-        loadEmployeeExpenses(); // Refresh lists
-    }
-}
-
 // Load admin expenses
 function loadAdminExpenses() {
+    console.log('Loading admin expenses...'); // Debugging log
     adminExpenseList.innerHTML = '';
     expenses.forEach(exp => {
+        console.log('Expense:', exp); // Debugging log for each expense
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - Status: ${exp.status}
+            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Status: ${exp.status}
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
             <button onclick="approveExpense(${exp.id})">Approve</button>
             <button onclick="rejectExpense(${exp.id})">Reject</button>
@@ -198,6 +173,7 @@ function loadAdminExpenses() {
         `;
         adminExpenseList.appendChild(li);
     });
+    console.log('Admin expenses loaded.'); // Debugging log
 }
 
 // Approve expense
@@ -222,6 +198,7 @@ function rejectExpense(id) {
 
 // Delete expense
 function deleteExpense(id) {
+    console.log('Delete button clicked for ID:', id); // Debugging log
     if (confirm('Are you sure you want to delete this expense?')) {
         expenses = expenses.filter(e => e.id !== id);
         localStorage.setItem('expenses', JSON.stringify(expenses));
