@@ -167,6 +167,7 @@ function loadAdminExpenses() {
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
             <button onclick="approveExpense(${exp.id})">Approve</button>
             <button onclick="rejectExpense(${exp.id})">Reject</button>
+            <button onclick="deleteExpense(${exp.id})">Delete</button>
         `;
         adminExpenseList.appendChild(li);
     });
@@ -187,6 +188,15 @@ function rejectExpense(id) {
     const exp = expenses.find(e => e.id === id);
     if (exp) {
         exp.status = 'rejected';
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+        loadAdminExpenses();
+    }
+}
+
+// Delete expense
+function deleteExpense(id) {
+    if (confirm('Are you sure you want to delete this expense?')) {
+        expenses = expenses.filter(e => e.id !== id);
         localStorage.setItem('expenses', JSON.stringify(expenses));
         loadAdminExpenses();
     }
