@@ -15,6 +15,7 @@ const adminExpenseList = document.getElementById('admin-expense-list');
 const employeeExpenseList = document.getElementById('employee-expense-list');
 const viewExpensesBtn = document.getElementById('view-expenses-btn');
 const viewExpensesDiv = document.getElementById('view-expenses');
+const refreshExpensesBtn = document.getElementById('refresh-expenses-btn');
 const registerLink = document.getElementById('register-link');
 const loginLink = document.getElementById('login-link');
 const logoutBtn = document.getElementById('logout-btn');
@@ -94,6 +95,7 @@ function showDashboard(role) {
         employeeDashboard.style.display = 'block';
         // Set default date to today
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        loadEmployeeExpenses(); // Load initial expenses
     } else {
         adminDashboard.style.display = 'block';
         loadAdminExpenses();
@@ -149,7 +151,14 @@ function saveExpense(empName, amount, description, date, fileData) {
     // Reset date to today
     document.getElementById('date').value = new Date().toISOString().split('T')[0];
     alert('Expense added successfully!');
+    loadEmployeeExpenses(); // Refresh the list
 }
+
+// Refresh expenses button (employee)
+refreshExpensesBtn.addEventListener('click', () => {
+    loadEmployeeExpenses();
+    alert('Expenses refreshed! Check for updated statuses.');
+});
 
 // View expenses button (employee)
 viewExpensesBtn.addEventListener('click', () => {
@@ -157,15 +166,26 @@ viewExpensesBtn.addEventListener('click', () => {
     loadEmployeeExpenses();
 });
 
-// Load employee expenses (for viewing and editing)
+// Load employee expenses (for initial list and viewing)
 function loadEmployeeExpenses() {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const userExpenses = expenses.filter(e => e.empName === user.username);
+    // Load initial expense list
+    expenseList.innerHTML = '';
+    userExpenses.forEach(exp => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - <strong>Status: ${exp.status}</strong>
+            ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
+        `;
+        expenseList.appendChild(li);
+    });
+    // Load view expenses list (with edit)
     employeeExpenseList.innerHTML = '';
     userExpenses.forEach(exp => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - Status: ${exp.status}
+            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - <strong>Status: ${exp.status}</strong>
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
             <button onclick="editExpense(${exp.id})">Edit</button>
         `;
@@ -188,6 +208,7 @@ function editExpense(id) {
         expenses = expenses.filter(e => e.id !== id);
         localStorage.setItem('expenses', JSON.stringify(expenses));
         viewExpensesDiv.style.display = 'none';
+        loadEmployeeExpenses(); // Refresh lists
     }
 }
 
