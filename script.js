@@ -12,11 +12,6 @@ const employeeDashboard = document.getElementById('employee-dashboard');
 const adminDashboard = document.getElementById('admin-dashboard');
 const expenseList = document.getElementById('expense-list');
 const adminExpenseList = document.getElementById('admin-expense-list');
-const employeeExpenseList = document.getElementById('employee-expense-list');
-const viewExpensesBtn = document.getElementById('view-expenses-btn');
-const viewExpensesDiv = document.getElementById('view-expenses');
-const refreshExpensesBtn = document.getElementById('refresh-expenses-btn');
-const refreshViewExpensesBtn = document.getElementById('refresh-view-expenses-btn');
 const registerLink = document.getElementById('register-link');
 const loginLink = document.getElementById('login-link');
 const logoutBtn = document.getElementById('logout-btn');
@@ -96,7 +91,7 @@ function showDashboard(role) {
         employeeDashboard.style.display = 'block';
         // Set default date to today
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        loadEmployeeExpenses(); // Load initial expenses
+        loadEmployeeExpenses(); // Load expenses
     } else {
         adminDashboard.style.display = 'block';
         loadAdminExpenses();
@@ -111,7 +106,6 @@ function logout() {
     localStorage.removeItem('currentUser');
     employeeDashboard.style.display = 'none';
     adminDashboard.style.display = 'none';
-    viewExpensesDiv.style.display = 'none';
     loginDiv.style.display = 'block';
 }
 
@@ -155,42 +149,11 @@ function saveExpense(empName, amount, description, date, fileData) {
     loadEmployeeExpenses(); // Refresh the list
 }
 
-// Refresh expenses button (employee)
-refreshExpensesBtn.addEventListener('click', () => {
-    loadEmployeeExpenses();
-    alert('Expenses refreshed! Check for updated statuses.');
-});
-
-// View expenses button (employee)
-viewExpensesBtn.addEventListener('click', () => {
-    viewExpensesDiv.style.display = viewExpensesDiv.style.display === 'none' ? 'block' : 'none';
-    loadEmployeeExpenses();
-});
-
-// Refresh view expenses button (employee)
-refreshViewExpensesBtn.addEventListener('click', () => {
-    loadEmployeeExpenses();
-    alert('View list refreshed!');
-});
-
-// Load employee expenses (for initial list and viewing)
+// Load employee expenses
 function loadEmployeeExpenses() {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const userExpenses = expenses.filter(e => e.empName === user.username);
-    console.log('Loading employee expenses for:', user.username, userExpenses); // Debugging
-    // Load initial expense list
     expenseList.innerHTML = '';
-    userExpenses.forEach(exp => {
-        const statusColor = exp.status === 'approved' ? 'green' : exp.status === 'rejected' ? 'red' : 'orange';
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - Status: <span style="color: ${statusColor}; font-weight: bold;">${exp.status}</span>
-            ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
-        `;
-        expenseList.appendChild(li);
-    });
-    // Load view expenses list (with edit)
-    employeeExpenseList.innerHTML = '';
     userExpenses.forEach(exp => {
         const statusColor = exp.status === 'approved' ? 'green' : exp.status === 'rejected' ? 'red' : 'orange';
         const li = document.createElement('li');
@@ -199,7 +162,7 @@ function loadEmployeeExpenses() {
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
             <button onclick="editExpense(${exp.id})">Edit</button>
         `;
-        employeeExpenseList.appendChild(li);
+        expenseList.appendChild(li);
     });
 }
 
@@ -217,7 +180,6 @@ function editExpense(id) {
         // Remove old expense and let user resubmit
         expenses = expenses.filter(e => e.id !== id);
         localStorage.setItem('expenses', JSON.stringify(expenses));
-        viewExpensesDiv.style.display = 'none';
         loadEmployeeExpenses(); // Refresh lists
     }
 }
