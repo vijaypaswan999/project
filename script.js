@@ -159,8 +159,10 @@ function loadEmployeeExpenses() {
 
 // Load admin expenses
 function loadAdminExpenses() {
+    console.log('Loading admin expenses...'); // Debugging log
     adminExpenseList.innerHTML = '';
     expenses.forEach(exp => {
+        console.log('Expense:', exp); // Debugging log for each expense
         const li = document.createElement('li');
         li.innerHTML = `
             <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Status: ${exp.status}
@@ -171,6 +173,7 @@ function loadAdminExpenses() {
         `;
         adminExpenseList.appendChild(li);
     });
+    console.log('Admin expenses loaded.'); // Debugging log
 }
 
 // Approve expense
@@ -195,6 +198,7 @@ function rejectExpense(id) {
 
 // Delete expense
 function deleteExpense(id) {
+    console.log('Delete button clicked for ID:', id); // Debugging log
     if (confirm('Are you sure you want to delete this expense?')) {
         expenses = expenses.filter(e => e.id !== id);
         localStorage.setItem('expenses', JSON.stringify(expenses));
