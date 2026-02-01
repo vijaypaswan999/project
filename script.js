@@ -30,11 +30,12 @@ loginLink.addEventListener('click', (e) => {
     loginDiv.style.display = 'block';
 });
 
-// Register employee
+// Register user (employee or admin)
 registerForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = document.getElementById('reg-username').value;
     const password = document.getElementById('reg-password').value;
+    const role = document.getElementById('reg-role').value;
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,7 +54,7 @@ registerForm.addEventListener('submit', (e) => {
         alert('Username already exists');
         return;
     }
-    users.push({ username, password, role: 'employee' });
+    users.push({ username, password, role });
     localStorage.setItem('users', JSON.stringify(users));
     alert('Registration successful! Please login.');
     registerDiv.style.display = 'none';
@@ -66,12 +67,7 @@ loginForm.addEventListener('submit', (e) => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const role = document.getElementById('role').value;
-    let user;
-    if (role === 'admin' && username === 'admin' && password === 'admin') {
-        user = { role: 'admin' };
-    } else {
-        user = users.find(u => u.username === username && u.password === password && u.role === role);
-    }
+    const user = users.find(u => u.username === username && u.password === password && u.role === role);
     if (user) {
         localStorage.setItem('currentUser', JSON.stringify(user));
         showDashboard(role);
