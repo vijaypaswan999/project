@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Expense Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Corporate Expense Tracker</h1>
+        <div id="login-form">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+                <label for="role">Role:</label>
+                <select id="role" required>
+                    <option value="employee">Employee</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="register-link">Register as Employee</a></p>
+        </div>
+        <div id="register-form" style="display: none;">
+            <h2>Register as Employee</h2>
+            <form id="registerForm">
+                <label for="reg-username">Username:</label>
+                <input type="text" id="reg-username" required>
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <a href="#" id="login-link">Login</a></p>
+        </div>
+        <div id="employee-dashboard" style="display: none;">
+            <button id="logout-btn">Logout</button>
+            <h2>Employee Dashboard</h2>
+            <h3>Add Expense</h3>
+            <form id="expenseForm">
+                <label for="emp-name">Employee Name:</label>
+                <input type="text" id="emp-name" required>
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" step="0.01" required>
+                <label for="description">Description:</label>
+                <textarea id="description" required></textarea>
+                <label for="file">Upload File:</label>
+                <input type="file" id="file">
+                <button type="submit">Add Expense</button>
+            </form>
+            <h3>Your Expenses</h3>
+            <ul id="expense-list"></ul>
+        </div>
+        <div id="admin-dashboard" style="display: none;">
+            <button id="logout-btn-admin">Logout</button>
+            <h2>Admin Dashboard</h2>
+            <h3>All Expenses</h3>
+            <ul id="admin-expense-list"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
