@@ -16,6 +16,7 @@ const employeeExpenseList = document.getElementById('employee-expense-list');
 const viewExpensesBtn = document.getElementById('view-expenses-btn');
 const viewExpensesDiv = document.getElementById('view-expenses');
 const refreshExpensesBtn = document.getElementById('refresh-expenses-btn');
+const refreshViewExpensesBtn = document.getElementById('refresh-view-expenses-btn');
 const registerLink = document.getElementById('register-link');
 const loginLink = document.getElementById('login-link');
 const logoutBtn = document.getElementById('logout-btn');
@@ -166,16 +167,24 @@ viewExpensesBtn.addEventListener('click', () => {
     loadEmployeeExpenses();
 });
 
+// Refresh view expenses button (employee)
+refreshViewExpensesBtn.addEventListener('click', () => {
+    loadEmployeeExpenses();
+    alert('View list refreshed!');
+});
+
 // Load employee expenses (for initial list and viewing)
 function loadEmployeeExpenses() {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const userExpenses = expenses.filter(e => e.empName === user.username);
+    console.log('Loading employee expenses for:', user.username, userExpenses); // Debugging
     // Load initial expense list
     expenseList.innerHTML = '';
     userExpenses.forEach(exp => {
+        const statusColor = exp.status === 'approved' ? 'green' : exp.status === 'rejected' ? 'red' : 'orange';
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - <strong>Status: ${exp.status}</strong>
+            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - Status: <span style="color: ${statusColor}; font-weight: bold;">${exp.status}</span>
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
         `;
         expenseList.appendChild(li);
@@ -183,9 +192,10 @@ function loadEmployeeExpenses() {
     // Load view expenses list (with edit)
     employeeExpenseList.innerHTML = '';
     userExpenses.forEach(exp => {
+        const statusColor = exp.status === 'approved' ? 'green' : exp.status === 'rejected' ? 'red' : 'orange';
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - <strong>Status: ${exp.status}</strong>
+            <strong>${exp.empName}</strong> - $${exp.amount} - ${exp.description} - Date: ${exp.date} - Status: <span style="color: ${statusColor}; font-weight: bold;">${exp.status}</span>
             ${exp.file ? `<br><a href="${exp.file}" download>Download File</a>` : ''}
             <button onclick="editExpense(${exp.id})">Edit</button>
         `;
