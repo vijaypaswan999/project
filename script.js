@@ -35,6 +35,7 @@ registerForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = document.getElementById('reg-username').value;
     const password = document.getElementById('reg-password').value;
+    const confirmPassword = document.getElementById('reg-confirm-password').value;
     const role = document.getElementById('reg-role').value;
     
     // Validate email format
@@ -47,6 +48,12 @@ registerForm.addEventListener('submit', (e) => {
     // Validate password length
     if (password.length < 8) {
         alert('Password must be at least 8 characters long.');
+        return;
+    }
+    
+    // Validate password confirmation
+    if (password !== confirmPassword) {
+        alert('Passwords do not match. Please try again.');
         return;
     }
     
